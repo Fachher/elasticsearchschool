@@ -1,6 +1,7 @@
 package de.syed.elasticsearchschool;
 
 import org.apache.http.message.BasicHeader;
+import org.elasticsearch.ElasticsearchStatusException;
 import org.elasticsearch.action.admin.indices.create.CreateIndexRequest;
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
 import org.elasticsearch.action.index.IndexRequest;
@@ -26,7 +27,7 @@ public class ShipmentTestDataCreator extends ClientObtainer{
             try {
                 for (int i = 0; i < 100; i++) {
                     IndexRequest indexRequest = new IndexRequest("shipment", "doc", ""+i);
-                    indexRequest.source("{\"shipmentId\":1,\"trackingNumber\":\"tn1\"}", XContentType.JSON);
+                    indexRequest.source("{\"shipmentId\":"+i+",\"trackingNumber\":\"tn"+i+"\"}", XContentType.JSON);
                     client.index(indexRequest, APPLICATION_JSON);
                 }
 
@@ -41,8 +42,8 @@ public class ShipmentTestDataCreator extends ClientObtainer{
             try {
                 client.delete(new DeleteIndexRequest("shipment"), APPLICATION_JSON);
                 System.out.println("Index shipment deleted");
-            } catch (IOException e) {
-                e.printStackTrace();
+            } catch (IOException | ElasticsearchStatusException e) {
+                System.out.println("Nothing to do");
             }
         });
     }
@@ -56,11 +57,6 @@ public class ShipmentTestDataCreator extends ClientObtainer{
                 e.printStackTrace();
             }
         });
-    }
-
-    public static void main(String[] args) throws IOException {
-        createTestData();
-        ElasticInstanceInfo.getAllIndices();
     }
 
 }
